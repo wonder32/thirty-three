@@ -32,7 +32,7 @@ import './editor.scss';
 export default function Edit() {
 	return (
 		<p { ...useBlockProps() }>
-			{ __( 'Thity Three – hello from the editor!', 'thity-three' ) }
+			{ __( 'thirty Three – hello from the editor!', 'thirty-three' ) }
 		</p>
 	);
 }
