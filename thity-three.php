@@ -4,7 +4,7 @@
  * Description:       Working with WordPress Gutenberg and three.js.
  * Version:           0.1.0
  * Requires at least: 6.7
- * Requires PHP:      7.4
+ * Requires PHP:      8.0
  * Author:            Wonder32
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return void
  */
 
-function multiBlockInit()
+function thirtyThreeInit(): void
 {
 	if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
 		wp_register_block_types_from_metadata_collection(
@@ -33,17 +33,18 @@ function multiBlockInit()
 		);
 	}
 }
-add_action( 'init', 'multiBlockInit', 20 );
+add_action( 'init', 'thirtyThreeInit', 20 );
 
 
 /**
  * Make sure translations are loaded for all blocks.
  */
 
-add_action( 'enqueue_block_editor_assets', 'multiblock_register_script_translations' );
-add_action( 'enqueue_block_assets', 'multiblock_register_script_translations' );
+add_action( 'enqueue_block_editor_assets', 'multiblockRegisterScriptTranslations' );
+add_action( 'enqueue_block_assets', 'multiblockRegisterScriptTranslations' );
 
-function multiblock_register_script_translations() {
+function multiblockRegisterScriptTranslations(): void
+{
 	$base_path  = plugin_dir_path( __FILE__ );
 	$asset_dirs = glob( $base_path . 'build/*', GLOB_ONLYDIR );
 
