@@ -10,6 +10,14 @@ return array(
 		'category' => 'widgets',
 		'icon' => 'smiley',
 		'description' => 'Example block scaffolded with Create Block tool.',
+		'attributes' => array(
+			'files' => array(
+				'type' => 'array',
+				'default' => array(
+					
+				)
+			)
+		),
 		'example' => array(
 			
 		),
