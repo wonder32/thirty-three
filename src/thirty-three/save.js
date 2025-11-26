@@ -1,24 +1,44 @@
-/**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
- */
 import { useBlockProps } from '@wordpress/block-editor';
 
-/**
- * The save function defines the way in which the different attributes should
- * be combined into the final markup, which is then serialized by the block
- * editor into `post_content`.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#save
- *
- * @return {Element} Element to render.
- */
-export default function save() {
+export default function save( { attributes } ) {
+	const {
+		imageUrl = '',
+		fileUrl = '',
+		scale = 0.1,
+		rotationX = 0,
+		rotationY = 0,
+		rotationZ = 0,
+		color = '0x004100',
+	} = attributes ?? {};
+
+	const blockProps = useBlockProps.save( {
+		className: 'thirty-three-block',
+		'data-image-url': imageUrl,
+		'data-file-url': fileUrl,
+		'data-scale': scale,
+		'data-rotation-x': rotationX,
+		'data-rotation-y': rotationY,
+		'data-rotation-z': rotationZ,
+		'data-color': color,
+	} );
+
 	return (
-		<p { ...useBlockProps.save() }>
-			{ 'thirty Three – hello from the saved content!' }
-		</p>
+		<div { ...blockProps }>
+			<div className="thirty-three-viewport">
+				<div className="thirty-three-placeholder">
+					{ imageUrl ? (
+						<img src={ imageUrl } alt="" loading="lazy" />
+					) : (
+						<span>{ '3D preview' }</span>
+					) }
+					<div className="thirty-three-loader" aria-hidden="true">
+						<div className="thirty-three-loader__bar" />
+					</div>
+				</div>
+			</div>
+			<div className="thirty-three-status" role="status" aria-live="polite">
+				{ fileUrl ? 'Loading 3D model…' : 'No 3MF file selected.' }
+			</div>
+		</div>
 	);
 }

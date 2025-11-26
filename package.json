@@ -24,6 +24,7 @@
 	},
 	"dependencies": {
 		"@wordpress/icons": "^11.2.0",
-		"@wordpress/interactivity": "^6.35.0"
+		"@wordpress/interactivity": "^6.35.0",
+		"three": "^0.161.0"
 	}
 }
