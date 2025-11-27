@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import { ThreeMFLoader } from 'three/examples/jsm/loaders/3MFLoader.js';
 
+// eslint-disable-next-line no-console
+console.info( '[thirty-three] view.js evaluated' );
+
 const degToRad = ( value = 0 ) =>
 	THREE.MathUtils.degToRad( Number.isFinite( value ) ? value : Number( value ) || 0 );
 
@@ -17,9 +20,24 @@ const initViewer = ( root ) => {
 	const viewport = root.querySelector( '.thirty-three-viewport' );
 	const placeholder = root.querySelector( '.thirty-three-placeholder' );
 	const status = root.querySelector( '.thirty-three-status' );
+	const modelUrl = data.fileUrl || '';
+
+	// eslint-disable-next-line no-console
+	console.info( '[thirty-three] init viewer', {
+		modelUrl,
+		imageUrl: data.imageUrl,
+		scale: data.scale,
+		rotationX: data.rotationX,
+		rotationY: data.rotationY,
+		rotationZ: data.rotationZ,
+		color: data.color,
+	} );
+
 	const setStatus = ( text ) => {
 		if ( status ) {
 			status.textContent = text;
+			// eslint-disable-next-line no-console
+			console.info( '[thirty-three] status:', text );
 		}
 	};
 
@@ -85,6 +103,8 @@ const initViewer = ( root ) => {
 	manager.onStart = () => {
 		placeholder?.classList.remove( 'is-hidden' );
 		setStatus( 'Loading 3D model…' );
+		// eslint-disable-next-line no-console
+		console.info( '[thirty-three] loader start', modelUrl );
 	};
 
 	manager.onError = () => {
@@ -119,6 +139,15 @@ const initViewer = ( root ) => {
 	};
 
 	const loadModel = () => {
+		if ( ! modelUrl ) {
+			setStatus( 'No 3MF file selected.' );
+			// eslint-disable-next-line no-console
+			console.warn( '[thirty-three] missing modelUrl' );
+			return;
+		}
+
+		// eslint-disable-next-line no-console
+		console.info( '[thirty-three] loading 3MF', modelUrl );
 		loader.load(
 			modelUrl,
 			( group ) => {
@@ -206,3 +235,5 @@ window.addEventListener( 'DOMContentLoaded', () => {
 		.querySelectorAll( '.wp-block-create-block-thirty-three, .thirty-three-block' )
 		.forEach( initViewer );
 } );
+
+console.info( '[thirty-three] view.js loaded' );
