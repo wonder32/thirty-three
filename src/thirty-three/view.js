@@ -33,7 +33,7 @@ const initViewer = ( root ) => {
 	}
 
 	const placeholderImage = data.imageUrl || '';
-	const targetScale = clamp( Number( data.scale ) || 0.1, 0.01, 10 );
+	const targetScale = clamp( Number( data.scale ) || 1, 0.1, 2 );
 	const targetRotation = {
 		x: degToRad( Number( data.rotationX ) || 0 ),
 		y: degToRad( Number( data.rotationY ) || 0 ),
@@ -83,6 +83,8 @@ const initViewer = ( root ) => {
 	let pointerDown = false;
 	let lastPointer = { x: 0, y: 0 };
 	let cameraDistance = 30;
+	let minCameraDistance = 4;
+	let maxCameraDistance = 200;
 
 	const manager = new THREE.LoadingManager();
 	const loader = new ThreeMFLoader( manager );
@@ -101,17 +103,18 @@ const initViewer = ( root ) => {
 		const center = aabb.getCenter( new THREE.Vector3() );
 		object.position.sub( center );
 
-		const size = aabb.getSize( new THREE.Vector3() ).length();
+		const size = aabb.getSize( new THREE.Vector3() );
+		const maxDimension = Math.max( size.x, size.y, size.z ) || 1;
 		const fitDistance =
-			( size * targetScale ) /
-			( 2 * Math.tan( THREE.MathUtils.degToRad( camera.fov * 0.5 ) ) );
+			maxDimension / ( 2 * Math.tan( THREE.MathUtils.degToRad( camera.fov * 0.5 ) ) );
 		cameraDistance = Math.max( fitDistance * 1.4, 6 );
+		minCameraDistance = Math.max( cameraDistance * 0.25, 2 );
+		maxCameraDistance = Math.max( cameraDistance * 8, 50 );
 		camera.position.set( 0, 0, cameraDistance );
 		camera.lookAt( 0, 0, 0 );
 	};
 
 	const applyLook = ( object ) => {
-		object.scale.setScalar( targetScale );
 		object.rotation.set( targetRotation.x, targetRotation.y, targetRotation.z );
 		object.traverse( ( child ) => {
 			if ( child.isMesh ) {
@@ -140,9 +143,11 @@ const initViewer = ( root ) => {
 				}
 				model = group;
 				applyLook( model );
+				model.scale.setScalar( targetScale );
 				centerModel( model );
 				scene.add( model );
 				render();
+				logObjectTransform();
 			},
 			undefined,
 			( error ) => {
@@ -171,6 +176,7 @@ const initViewer = ( root ) => {
 		model.rotation.x += deltaY * 0.01;
 		lastPointer = { x: event.clientX, y: event.clientY };
 		render();
+		logObjectTransform();
 	};
 
 	const onWheel = ( event ) => {
@@ -180,9 +186,10 @@ const initViewer = ( root ) => {
 		event.preventDefault();
 		const direction = event.deltaY > 0 ? 1 : -1;
 		cameraDistance *= direction > 0 ? 1.08 : 0.92;
-		cameraDistance = clamp( cameraDistance, 4, 200 );
+		cameraDistance = clamp( cameraDistance, minCameraDistance, maxCameraDistance );
 		camera.position.set( 0, 0, cameraDistance );
 		render();
+		logObjectTransform();
 	};
 
 	const onResize = () => {
@@ -202,6 +209,29 @@ const initViewer = ( root ) => {
 
 	const render = () => {
 		renderer.render( scene, camera );
+	};
+
+	const logObjectTransform = () => {
+		if ( ! model ) {
+			return;
+		}
+
+		const rotationX = THREE.MathUtils.radToDeg( model.rotation.x );
+		const rotationY = THREE.MathUtils.radToDeg( model.rotation.y );
+		const rotationZ = THREE.MathUtils.radToDeg( model.rotation.z );
+		const { x, y, z } = model.position;
+
+		/* eslint-disable no-console */
+		console.clear();
+		console.log( `Position X: ${ x.toFixed( 2 ) }` );
+		console.log( `Position Y: ${ y.toFixed( 2 ) }` );
+		console.log( `Position Z: ${ z.toFixed( 2 ) }` );
+		console.log( `Rotation X: ${ rotationX.toFixed( 2 ) } degrees` );
+		console.log( `Rotation Y: ${ rotationY.toFixed( 2 ) } degrees` );
+		console.log( `Rotation Z: ${ rotationZ.toFixed( 2 ) } degrees` );
+		console.log( `Scale: ${ model.scale.x.toFixed( 2 ) }` );
+		console.log( `Camera Distance: ${ cameraDistance.toFixed( 2 ) }` );
+		/* eslint-enable no-console */
 	};
 
 	renderer.setAnimationLoop( render );
