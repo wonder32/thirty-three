@@ -94,8 +94,10 @@ const initViewer = ( root ) => {
 		setStatus( 'Loading 3D model…' );
 	};
 
-	manager.onError = () => {
-		setStatus( 'Could not load 3D model.' );
+	manager.onError = ( url ) => {
+		setStatus( 'Could not load 3D model. Check console for details.' );
+		// eslint-disable-next-line no-console
+		console.error( '[thirty-three] LoadingManager error', url );
 	};
 
 	const centerModel = ( object ) => {
@@ -151,8 +153,11 @@ const initViewer = ( root ) => {
 			},
 			undefined,
 			( error ) => {
-				setStatus( 'Could not load 3D model.' );
+				setStatus( 'Could not load 3D model. Check console for details.' );
 				placeholder?.classList.remove( 'is-hidden' );
+				/* eslint-disable no-console */
+				console.error( '[thirty-three] 3MFLoader error', error );
+				/* eslint-enable no-console */
 			}
 		);
 	};
