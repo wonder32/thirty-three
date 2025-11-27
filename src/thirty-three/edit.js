@@ -263,10 +263,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( value ) =>
 								setAttributes( { scale: Number( value ?? 0.1 ) } )
 							}
-							min={ 0.05 }
+							min={ 0.01 }
 							max={ 5 }
-							step={ 0.05 }
-							help={ __( 'Use 0.05 to 5 for fine control.', 'thirty-three' ) }
+							step={ 0.01 }
+							help={ __( 'Use 0.01 to 5 for fine control.', 'thirty-three' ) }
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
 						/>

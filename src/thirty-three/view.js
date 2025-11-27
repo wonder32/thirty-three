@@ -22,22 +22,9 @@ const initViewer = ( root ) => {
 	const status = root.querySelector( '.thirty-three-status' );
 	const modelUrl = data.fileUrl || '';
 
-	// eslint-disable-next-line no-console
-	console.info( '[thirty-three] init viewer', {
-		modelUrl,
-		imageUrl: data.imageUrl,
-		scale: data.scale,
-		rotationX: data.rotationX,
-		rotationY: data.rotationY,
-		rotationZ: data.rotationZ,
-		color: data.color,
-	} );
-
 	const setStatus = ( text ) => {
 		if ( status ) {
 			status.textContent = text;
-			// eslint-disable-next-line no-console
-			console.info( '[thirty-three] status:', text );
 		}
 	};
 
@@ -103,8 +90,6 @@ const initViewer = ( root ) => {
 	manager.onStart = () => {
 		placeholder?.classList.remove( 'is-hidden' );
 		setStatus( 'Loading 3D model…' );
-		// eslint-disable-next-line no-console
-		console.info( '[thirty-three] loader start', modelUrl );
 	};
 
 	manager.onError = () => {
@@ -141,13 +126,9 @@ const initViewer = ( root ) => {
 	const loadModel = () => {
 		if ( ! modelUrl ) {
 			setStatus( 'No 3MF file selected.' );
-			// eslint-disable-next-line no-console
-			console.warn( '[thirty-three] missing modelUrl' );
 			return;
 		}
 
-		// eslint-disable-next-line no-console
-		console.info( '[thirty-three] loading 3MF', modelUrl );
 		loader.load(
 			modelUrl,
 			( group ) => {
@@ -167,8 +148,6 @@ const initViewer = ( root ) => {
 			( error ) => {
 				setStatus( 'Could not load 3D model.' );
 				placeholder?.classList.remove( 'is-hidden' );
-				// eslint-disable-next-line no-console
-				console.error( '[thirty-three] 3MF load failed', error );
 			}
 		);
 	};
@@ -235,5 +214,3 @@ window.addEventListener( 'DOMContentLoaded', () => {
 		.querySelectorAll( '.wp-block-create-block-thirty-three, .thirty-three-block' )
 		.forEach( initViewer );
 } );
-
-console.info( '[thirty-three] view.js loaded' );
