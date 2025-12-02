@@ -19,7 +19,7 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import { pencil } from '@wordpress/icons';
-import { useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 
 import './editor.scss';
 
@@ -70,6 +70,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const blockProps = useBlockProps( { className: 'thirty-three-editor' } );
 	const [ isModalOpen, setIsModalOpen ] = useState( false );
+	const previewRef = useRef( null );
+	const viewerHandleRef = useRef( null );
 
 	const handleImageSelect = ( media ) => {
 		setAttributes( {
@@ -85,8 +87,126 @@ export default function Edit( { attributes, setAttributes } ) {
 		} );
 	};
 
+	useEffect( () => {
+		const root = previewRef.current;
+		if ( ! root ) {
+			return undefined;
+		}
+
+		root.dataset.imageUrl = imageUrl || '';
+		root.dataset.fileUrl = fileUrl || '';
+		root.dataset.scale = String( Number( scale ?? 1 ) );
+		root.dataset.rotationX = String( Number( rotationX ?? 0 ) );
+		root.dataset.rotationY = String( Number( rotationY ?? 0 ) );
+		root.dataset.rotationZ = String( Number( rotationZ ?? 0 ) );
+		root.dataset.color = color || '0x004100';
+
+		const placeholder = root.querySelector( '.thirty-three-placeholder' );
+		const status = root.querySelector( '.thirty-three-status' );
+
+		if ( ! fileUrl ) {
+			placeholder?.classList.remove( 'is-hidden' );
+			if ( status ) {
+				status.textContent = __( 'No 3MF file selected.', 'thirty-three' );
+			}
+			root.querySelector( 'canvas' )?.remove();
+			return undefined;
+		}
+
+		if ( viewerHandleRef.current?.update ) {
+			viewerHandleRef.current.update( {
+				scale,
+				rotationX,
+				rotationY,
+				rotationZ,
+				color,
+			} );
+		}
+
+		return undefined;
+	}, [ imageUrl, fileUrl, scale, rotationX, rotationY, rotationZ, color ] );
+
+	useEffect( () => {
+		const root = previewRef.current;
+		if ( ! root ) {
+			return undefined;
+		}
+
+		if ( ! fileUrl ) {
+			viewerHandleRef.current?.destroy?.();
+			viewerHandleRef.current = null;
+			return undefined;
+		}
+
+		let cancelled = false;
+
+		import( './viewer-runtime' )
+			.then( ( mod ) => mod.mountViewer( root, { interactive: false, logTransforms: false } ) )
+			.then( ( handle ) => {
+				if ( cancelled ) {
+					handle?.destroy?.();
+					return;
+				}
+				viewerHandleRef.current?.destroy?.();
+				viewerHandleRef.current = handle;
+				handle?.update?.( {
+					scale,
+					rotationX,
+					rotationY,
+					rotationZ,
+					color,
+				} );
+			} )
+			.catch( ( error ) => {
+				// eslint-disable-next-line no-console
+				console.error( '[thirty-three] Preview mount failed', error );
+			} );
+
+		return () => {
+			cancelled = true;
+		};
+	}, [ fileUrl ] );
+
+	useEffect(
+		() => () => {
+			viewerHandleRef.current?.destroy?.();
+			viewerHandleRef.current = null;
+		},
+		[]
+	);
+
 	return (
 		<div { ...blockProps }>
+			<div className="thirty-three-preview">
+				<div
+					ref={ previewRef }
+					className="thirty-three-block"
+					data-image-url={ imageUrl || '' }
+					data-file-url={ fileUrl || '' }
+					data-scale={ scale ?? 1 }
+					data-rotation-x={ rotationX ?? 0 }
+					data-rotation-y={ rotationY ?? 0 }
+					data-rotation-z={ rotationZ ?? 0 }
+					data-color={ color || '0x004100' }
+				>
+					<div className="thirty-three-viewport">
+						<div className="thirty-three-placeholder">
+							{ imageUrl ? (
+								<img src={ imageUrl } alt="" loading="lazy" />
+							) : (
+								<span>{ __( '3D preview', 'thirty-three' ) }</span>
+							) }
+							<div className="thirty-three-loader" aria-hidden="true">
+								<div className="thirty-three-loader__bar" />
+							</div>
+						</div>
+					</div>
+					<div className="thirty-three-status" role="status" aria-live="polite">
+						{ fileUrl ? 'Loading 3D model…' : 'No 3MF file selected.' }
+					</div>
+				</div>
+			</div>
+
 			<Card>
 				<CardHeader>
 					<Flex align="center" justify="space-between" gap={ 2 }>
