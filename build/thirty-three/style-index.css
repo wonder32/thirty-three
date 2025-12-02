@@ -1,1 +1,97 @@
-.thirty-three-block,.wp-block-create-block-thirty-three{background:radial-gradient(circle at 20% 20%,#101828,#0b1220 50%,#060b15 100%);border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.25);color:#e5e7eb;overflow:hidden;position:relative}.thirty-three-viewport{min-height:320px;position:relative;width:100%}.thirty-three-viewport canvas{display:block;height:100%!important;width:100%!important}.thirty-three-placeholder{backdrop-filter:blur(6px);background:linear-gradient(145deg,hsla(0,0%,100%,.06),hsla(0,0%,100%,.02));border:1px solid hsla(0,0%,100%,.07);display:grid;inset:0;place-items:center;position:absolute;transition:opacity .22s ease,visibility .22s ease}.thirty-three-placeholder img{filter:drop-shadow(0 10px 30px rgba(0,0,0,.35));max-height:100%;max-width:100%;-o-object-fit:contain;object-fit:contain}.thirty-three-placeholder span{color:rgba(229,231,235,.7);font-size:14px;letter-spacing:.08em;text-transform:uppercase}.thirty-three-placeholder.is-hidden{opacity:0;pointer-events:none;visibility:hidden}.thirty-three-loader{background:hsla(0,0%,100%,.1);border-radius:999px;bottom:18px;height:4px;left:50%;overflow:hidden;position:absolute;transform:translateX(-50%);width:120px}.thirty-three-loader__bar{animation:thirty-three-loader 1.4s ease-in-out infinite;background:linear-gradient(90deg,#67e8f9,#38bdf8,#6366f1);height:100%;width:36%}@keyframes thirty-three-loader{0%{transform:translateX(-80%)}50%{transform:translateX(60%)}to{transform:translateX(140%)}}.thirty-three-status{background:linear-gradient(180deg,hsla(0,0%,100%,.05),hsla(0,0%,100%,0));color:rgba(229,231,235,.8);font-size:14px;letter-spacing:.02em;padding:14px 18px 16px}
+/*!****************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/thirty-three/style.scss ***!
+  \****************************************************************************************************************************************************************************************************************************************************/
+.wp-block-create-block-thirty-three,
+.thirty-three-block {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(circle at 20% 20%, #101828, #0b1220 50%, #060b15 100%);
+  color: #e5e7eb;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+}
+
+.thirty-three-viewport {
+  position: relative;
+  min-height: 320px;
+  width: 100%;
+}
+
+.thirty-three-viewport canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.thirty-three-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: opacity 220ms ease, visibility 220ms ease;
+}
+
+.thirty-three-placeholder img {
+  max-width: 100%;
+  max-height: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.35));
+}
+
+.thirty-three-placeholder span {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(229, 231, 235, 0.7);
+}
+
+.thirty-three-placeholder.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.thirty-three-loader {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.thirty-three-loader__bar {
+  height: 100%;
+  width: 36%;
+  background: linear-gradient(90deg, #67e8f9, #38bdf8, #6366f1);
+  animation: thirty-three-loader 1.4s ease-in-out infinite;
+}
+
+@keyframes thirty-three-loader {
+  0% {
+    transform: translateX(-80%);
+  }
+  50% {
+    transform: translateX(60%);
+  }
+  100% {
+    transform: translateX(140%);
+  }
+}
+
+.thirty-three-status {
+  padding: 14px 18px 16px;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: rgba(229, 231, 235, 0.8);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+}
+
+/*# sourceMappingURL=style-index.css.map*/

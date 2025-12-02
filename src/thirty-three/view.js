@@ -1,10 +1,32 @@
-import * as THREE from 'three';
-import { ThreeMFLoader } from 'three/examples/jsm/loaders/3MFLoader.js';
-
 // eslint-disable-next-line no-console
 console.info( '[thirty-three] view.js evaluated' );
 
-const degToRad = ( value = 0 ) =>
+let threeDepsPromise;
+
+const loadThreeDeps = () => {
+	if ( threeDepsPromise ) {
+		return threeDepsPromise;
+	}
+
+	// Prefer a globally available THREE if something else already provided it.
+	threeDepsPromise = ( async () => {
+		const threeNamespace = window.THREE || ( await import( 'three' ) );
+		const THREE = threeNamespace.default || threeNamespace;
+		const loaderModule = await import( 'three/examples/jsm/loaders/3MFLoader.js' );
+		const ThreeMFLoader =
+			loaderModule.ThreeMFLoader || loaderModule.default || loaderModule;
+
+		if ( ! window.THREE ) {
+			window.THREE = THREE;
+		}
+
+		return { THREE, ThreeMFLoader };
+	} )();
+
+	return threeDepsPromise;
+};
+
+const degToRad = ( value = 0, THREE ) =>
 	THREE.MathUtils.degToRad( Number.isFinite( value ) ? value : Number( value ) || 0 );
 
 const parseColor = ( value ) => {
@@ -15,7 +37,8 @@ const parseColor = ( value ) => {
 
 const clamp = ( value, min, max ) => Math.min( Math.max( value, min ), max );
 
-const initViewer = ( root ) => {
+const initViewer = ( root, libs ) => {
+	const { THREE, ThreeMFLoader } = libs;
 	const data = root.dataset || {};
 	const viewport = root.querySelector( '.thirty-three-viewport' );
 	const placeholder = root.querySelector( '.thirty-three-placeholder' );
@@ -35,9 +58,9 @@ const initViewer = ( root ) => {
 	const placeholderImage = data.imageUrl || '';
 	const targetScale = clamp( Number( data.scale ) || 1, 0.1, 2 );
 	const targetRotation = {
-		x: degToRad( Number( data.rotationX ) || 0 ),
-		y: degToRad( Number( data.rotationY ) || 0 ),
-		z: degToRad( Number( data.rotationZ ) || 0 ),
+		x: degToRad( Number( data.rotationX ) || 0, THREE ),
+		y: degToRad( Number( data.rotationY ) || 0, THREE ),
+		z: degToRad( Number( data.rotationZ ) || 0, THREE ),
 	};
 	const targetColor = parseColor( data.color );
 
@@ -48,6 +71,7 @@ const initViewer = ( root ) => {
 	if ( ! modelUrl ) {
 		setStatus( 'No 3MF file selected.' );
 		return;
+		
 	}
 
 	const renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
@@ -245,7 +269,14 @@ const initViewer = ( root ) => {
 };
 
 window.addEventListener( 'DOMContentLoaded', () => {
-	document
-		.querySelectorAll( '.wp-block-create-block-thirty-three, .thirty-three-block' )
-		.forEach( initViewer );
+	loadThreeDeps()
+		.then( ( libs ) => {
+			document
+				.querySelectorAll( '.wp-block-create-block-thirty-three, .thirty-three-block' )
+				.forEach( ( root ) => initViewer( root, libs ) );
+		} )
+		.catch( ( error ) => {
+			// eslint-disable-next-line no-console
+			console.error( '[thirty-three] Failed to load Three.js dependencies', error );
+		} );
 } );
