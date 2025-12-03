@@ -4,22 +4,19 @@ import {
 	useBlockProps,
 	MediaUpload,
 	MediaUploadCheck,
+	InspectorControls,
 } from '@wordpress/block-editor';
 import {
 	Button,
-	Card,
-	CardBody,
-	CardHeader,
 	ColorPicker,
 	Flex,
 	FlexBlock,
 	FlexItem,
-	Modal,
+	PanelBody,
 	RangeControl,
 	TextControl,
 } from '@wordpress/components';
-import { pencil } from '@wordpress/icons';
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 import './editor.scss';
 
@@ -69,7 +66,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	} = attributes;
 
 	const blockProps = useBlockProps( { className: 'thirty-three-editor' } );
-	const [ isModalOpen, setIsModalOpen ] = useState( false );
 	const previewRef = useRef( null );
 	const viewerHandleRef = useRef( null );
 
@@ -127,14 +123,14 @@ export default function Edit( { attributes, setAttributes } ) {
 	}, [ imageUrl, fileUrl, scale, rotationX, rotationY, rotationZ, color ] );
 
 	useEffect( () => {
-		const root = previewRef.current;
-		if ( ! root ) {
-			return undefined;
-		}
-
 		if ( ! fileUrl ) {
 			viewerHandleRef.current?.destroy?.();
 			viewerHandleRef.current = null;
+			return undefined;
+		}
+
+		const root = previewRef.current;
+		if ( ! root ) {
 			return undefined;
 		}
 
@@ -177,120 +173,57 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<div { ...blockProps }>
-			<div className="thirty-three-preview">
-				<div
-					ref={ previewRef }
-					className="thirty-three-block"
-					data-image-url={ imageUrl || '' }
-					data-file-url={ fileUrl || '' }
-					data-scale={ scale ?? 1 }
-					data-rotation-x={ rotationX ?? 0 }
-					data-rotation-y={ rotationY ?? 0 }
-					data-rotation-z={ rotationZ ?? 0 }
-					data-color={ color || '0x004100' }
-				>
-					<div className="thirty-three-viewport">
-						<div className="thirty-three-placeholder">
-							{ imageUrl ? (
-								<img src={ imageUrl } alt="" loading="lazy" />
-							) : (
-								<span>{ __( '3D preview', 'thirty-three' ) }</span>
-							) }
-							<div className="thirty-three-loader" aria-hidden="true">
-								<div className="thirty-three-loader__bar" />
+			{ fileUrl ? (
+				<div className="thirty-three-preview">
+					<div
+						ref={ previewRef }
+						className="thirty-three-block"
+						data-image-url={ imageUrl || '' }
+						data-file-url={ fileUrl || '' }
+						data-scale={ scale ?? 1 }
+						data-rotation-x={ rotationX ?? 0 }
+						data-rotation-y={ rotationY ?? 0 }
+						data-rotation-z={ rotationZ ?? 0 }
+						data-color={ color || '0x004100' }
+					>
+						<div className="thirty-three-viewport">
+							<div className="thirty-three-placeholder">
+								{ imageUrl ? (
+									<img src={ imageUrl } alt="" loading="lazy" />
+								) : (
+									<span>{ __( '3D preview', 'thirty-three' ) }</span>
+								) }
+								<div className="thirty-three-loader" aria-hidden="true">
+									<div className="thirty-three-loader__bar" />
+								</div>
 							</div>
 						</div>
-					</div>
-					<div className="thirty-three-status" role="status" aria-live="polite">
-						{ fileUrl ? 'Loading 3D model…' : 'No 3MF file selected.' }
+						<div className="thirty-three-status" role="status" aria-live="polite">
+							{ fileUrl ? 'Loading 3D model…' : 'No 3MF file selected.' }
+						</div>
 					</div>
 				</div>
-			</div>
-
-			<Card>
-				<CardHeader>
-					<Flex align="center" justify="space-between" gap={ 2 }>
-						<FlexBlock>
-							<strong>{ __( '3MF block settings', 'thirty-three' ) }</strong>
-							<div className="thirty-three-editor__file-subtitle">
-								{ fileUrl
-									? fileUrl
-									: __( 'No 3MF file selected yet', 'thirty-three' ) }
-							</div>
-						</FlexBlock>
-						<FlexItem>
-							<Button
-								icon={ pencil }
-								variant="secondary"
-								className="components-dropdown__toggle"
-								onClick={ () => setIsModalOpen( true ) }
-							>
-								{ __(
-									'Edit post selection',
-									'dynamic-button-react'
-								) }
+			) : (
+				<div className="component-card">
+					<div className="component-card__body">
+						<div className="component-card__title">
+							{ __( '3MF preview', 'thirty-three' ) }
+						</div>
+						<div className="component-card__description">
+							{ __( 'Select a 3MF file in the sidebar to see a live preview.', 'thirty-three' ) }
+						</div>
+						<Flex gap={ 8 } align="center" className="component-card__actions">
+							<Button variant="primary" onClick={ () => {} } disabled>
+								{ __( 'Waiting for file', 'thirty-three' ) }
 							</Button>
-						</FlexItem>
-					</Flex>
-				</CardHeader>
+						</Flex>
+					</div>
+				</div>
+			) }
 
-				<CardBody>
-					<Flex align="center" gap={ 2 }>
-						<FlexItem>
-							{ imageUrl ? (
-								<img
-									src={ imageUrl }
-									alt={ __( 'Selected preview', 'thirty-three' ) }
-									style={ { width: '96px', height: 'auto', borderRadius: '4px' } }
-								/>
-							) : (
-								<div
-									style={ {
-										width: '96px',
-										height: '96px',
-										border: '1px dashed #ddd',
-										display: 'flex',
-										alignItems: 'center',
-										justifyContent: 'center',
-										borderRadius: '4px',
-										fontSize: '12px',
-									} }
-								>
-									{ __( 'No image', 'thirty-three' ) }
-								</div>
-							) }
-						</FlexItem>
-						<FlexBlock>
-							<div>
-								<strong>{ __( '3MF file', 'thirty-three' ) }:</strong>{ ' ' }
-								{ fileUrl || __( 'Not set', 'thirty-three' ) }
-							</div>
-							<div>
-								<strong>{ __( 'Scale', 'thirty-three' ) }:</strong>{ ' ' }
-								{ Number( scale ?? 0.1 ).toFixed( 2 ) }
-							</div>
-							<div>
-								<strong>{ __( 'Rotation', 'thirty-three' ) }:</strong>{ ' ' }
-								X { Number( rotationX ?? 0 ) }° / Y { Number(
-									rotationY ?? 0
-								) }° / Z { Number( rotationZ ?? 0 ) }°
-							</div>
-							<div>
-								<strong>{ __( 'Colour', 'thirty-three' ) }:</strong>{ ' ' }
-								{ color || '0x004100' }
-							</div>
-						</FlexBlock>
-					</Flex>
-				</CardBody>
-			</Card>
-
-			{ isModalOpen && (
-				<Modal
-					title={ __( '3MF settings', 'thirty-three' ) }
-					onRequestClose={ () => setIsModalOpen( false ) }
-					shouldCloseOnClickOutside={ false }
-				>
-					<div style={ { display: 'grid', gap: '1rem' } }>
+			<InspectorControls>
+				<PanelBody title={ __( '3MF Settings', 'thirty-three' ) } initialOpen>
+					<div className="thirty-three-editor__sidebar-grid">
 						<div className="thirty-three-editor__media-input">
 							<span className="thirty-three-editor__media-label">
 								{ __( 'Preview image', 'thirty-three' ) }
@@ -378,15 +311,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						</div>
 
 						<RangeControl
-							label={ __( 'Scale', 'thirty-three' ) }
-							value={ Number( scale ?? 0.1 ) }
+							label={ __( 'Zoom', 'thirty-three' ) }
+							value={ Number( scale ?? 1 ) }
 							onChange={ ( value ) =>
-								setAttributes( { scale: Number( value ?? 0.1 ) } )
+								setAttributes( { scale: Number( value ?? 1 ) } )
 							}
 							min={ 0.01 }
-							max={ 5 }
+							max={ 2 }
 							step={ 0.01 }
-							help={ __( 'Use 0.01 to 5 for fine control.', 'thirty-three' ) }
+							help={ __( '0.01–2.00 applied after fit; 1 = natural size.', 'thirty-three' ) }
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
 						/>
@@ -445,27 +378,21 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 							<TextControl
 								label={ __( 'Hex colour (0x format)', 'thirty-three' ) }
-								value={ color ?? '0x004100' }
+								value={ color ?? '0x0a9a16' }
 								onChange={ ( value ) =>
 									setAttributes( { color: ensure0xColor( value ) } )
 								}
 								help={ __(
-									'Example: 0xff0000 for pure red.',
+									'Example: 0x0a9a16 for pure green.',
 									'thirty-three'
 								) }
 								__next40pxDefaultSize
 								__nextHasNoMarginBottom
 							/>
 						</div>
-
-						<Flex justify="flex-end" gap={ 2 }>
-							<Button variant="tertiary" onClick={ () => setIsModalOpen( false ) }>
-								{ __( 'Close', 'thirty-three' ) }
-							</Button>
-						</Flex>
 					</div>
-				</Modal>
-			) }
+				</PanelBody>
+			</InspectorControls>
 		</div>
 	);
 }

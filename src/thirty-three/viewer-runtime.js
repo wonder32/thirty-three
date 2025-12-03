@@ -125,6 +125,9 @@ const initViewerWithLibs = ( root, libs, options = {} ) => {
 	};
 
 	const centerModel = ( object ) => {
+		const prevScale = object.scale.clone();
+		object.scale.setScalar( 1 );
+
 		const aabb = new THREE.Box3().setFromObject( object );
 		const center = aabb.getCenter( new THREE.Vector3() );
 		object.position.sub( center );
@@ -138,6 +141,8 @@ const initViewerWithLibs = ( root, libs, options = {} ) => {
 		maxCameraDistance = Math.max( cameraDistance * 8, 50 );
 		camera.position.set( 0, 0, cameraDistance );
 		camera.lookAt( 0, 0, 0 );
+
+		object.scale.copy( prevScale );
 	};
 
 	const applyLook = ( object ) => {
@@ -200,8 +205,8 @@ const initViewerWithLibs = ( root, libs, options = {} ) => {
 				}
 				model = group;
 				applyLook( model );
-				model.scale.setScalar( targetScale );
 				centerModel( model );
+				model.scale.setScalar( targetScale );
 				scene.add( model );
 				render();
 				logObjectTransform();
@@ -275,7 +280,7 @@ const initViewerWithLibs = ( root, libs, options = {} ) => {
 
 	const update = ( next = {} ) => {
 		if ( Object.prototype.hasOwnProperty.call( next, 'scale' ) ) {
-			targetScale = clamp( Number( next.scale ) || 1, 0.1, 2 );
+			targetScale = clamp( Number( next.scale ) || 1, 0.01, 2 );
 		}
 		if ( Object.prototype.hasOwnProperty.call( next, 'rotationX' ) ) {
 			targetRotation.x = degToRad( Number( next.rotationX ) || 0, THREE );

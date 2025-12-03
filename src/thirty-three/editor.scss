@@ -1,9 +1,42 @@
-/**
- * The following styles get applied inside the editor only.
- *
- * Replace them with your own styles or remove the file completely.
- */
+.thirty-three-editor {
+	display: grid;
+	gap: 18px;
+}
 
-.wp-block-create-block-thirty-three {
-	border: 1px dotted #f00;
+.thirty-three-preview {
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 10px 30px rgba( 0, 0, 0, 0.18 );
+}
+
+.thirty-three-editor__panel {
+	margin-top: 4px;
+}
+
+.component-card {
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	padding: 24px;
+	background: #fff;
+	box-shadow: 0 8px 20px rgba( 0, 0, 0, 0.06 );
+}
+
+.component-card__title {
+	font-weight: 600;
+	font-size: 16px;
+	margin-bottom: 6px;
+}
+
+.component-card__description {
+	color: #475467;
+	margin-bottom: 12px;
+}
+
+.component-card__actions {
+	margin-top: 4px;
+}
+
+.thirty-three-editor__sidebar-grid {
+	display: grid;
+	gap: 16px;
 }

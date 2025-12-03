@@ -1,13 +1,1 @@
-/*!*****************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/thirty-three/editor.scss ***!
-  \*****************************************************************************************************************************************************************************************************************************************************/
-/**
- * The following styles get applied inside the editor only.
- *
- * Replace them with your own styles or remove the file completely.
- */
-.wp-block-create-block-thirty-three {
-  border: 1px dotted #f00;
-}
-
-/*# sourceMappingURL=index.css.map*/
+.thirty-three-editor{display:grid;gap:18px}.thirty-three-preview{border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);overflow:hidden}.thirty-three-editor__panel{margin-top:4px}.component-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.06);padding:24px}.component-card__title{font-size:16px;font-weight:600;margin-bottom:6px}.component-card__description{color:#475467;margin-bottom:12px}.component-card__actions{margin-top:4px}.thirty-three-editor__sidebar-grid{display:grid;gap:16px}
