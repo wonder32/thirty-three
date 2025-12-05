@@ -109,6 +109,9 @@ const initViewerWithLibs = ( root, libs, options = {} ) => {
 	let cameraDistance = 30;
 	let minCameraDistance = 4;
 	let maxCameraDistance = 200;
+	// Spherical coords for orbiting camera: theta is azimuth, phi is polar angle.
+	let cameraAzimuth = Math.PI / 2;
+	let cameraPolar = Math.PI / 2;
 
 	const manager = new THREE.LoadingManager();
 	const loader = new ThreeMFLoader( manager );
@@ -122,6 +125,15 @@ const initViewerWithLibs = ( root, libs, options = {} ) => {
 		setStatus( 'Could not load 3D model. Check console for details.' );
 		// eslint-disable-next-line no-console
 		console.error( '[thirty-three] LoadingManager error', url );
+	};
+
+	const updateCameraPosition = () => {
+		const sinPhi = Math.sin( cameraPolar );
+		const x = cameraDistance * sinPhi * Math.cos( cameraAzimuth );
+		const y = cameraDistance * Math.cos( cameraPolar );
+		const z = cameraDistance * sinPhi * Math.sin( cameraAzimuth );
+		camera.position.set( x, y, z );
+		camera.lookAt( 0, 0, 0 );
 	};
 
 	const centerModel = ( object ) => {
@@ -139,8 +151,7 @@ const initViewerWithLibs = ( root, libs, options = {} ) => {
 		cameraDistance = Math.max( fitDistance * 1.4, 6 );
 		minCameraDistance = Math.max( cameraDistance * 0.25, 2 );
 		maxCameraDistance = Math.max( cameraDistance * 8, 50 );
-		camera.position.set( 0, 0, cameraDistance );
-		camera.lookAt( 0, 0, 0 );
+		updateCameraPosition();
 
 		object.scale.copy( prevScale );
 	};
@@ -185,6 +196,8 @@ const initViewerWithLibs = ( root, libs, options = {} ) => {
 		console.log( `Rotation Z: ${ rotationZ.toFixed( 2 ) } degrees` );
 		console.log( `Scale: ${ model.scale.x.toFixed( 2 ) }` );
 		console.log( `Camera Distance: ${ cameraDistance.toFixed( 2 ) }` );
+		console.log( `Camera Azimuth: ${ cameraAzimuth.toFixed( 2 ) } rad` );
+		console.log( `Camera Polar: ${ cameraPolar.toFixed( 2 ) } rad` );
 		/* eslint-enable no-console */
 	};
 
@@ -232,14 +245,15 @@ const initViewerWithLibs = ( root, libs, options = {} ) => {
 	};
 
 	const onPointerMove = ( event ) => {
-		if ( ! pointerDown || ! model ) {
+		if ( ! pointerDown ) {
 			return;
 		}
 		const deltaX = event.clientX - lastPointer.x;
 		const deltaY = event.clientY - lastPointer.y;
-		model.rotation.y += deltaX * 0.01;
-		model.rotation.x += deltaY * 0.01;
+		cameraAzimuth += deltaX * 0.01;
+		cameraPolar = clamp( cameraPolar + deltaY * 0.01, 0.1, Math.PI - 0.1 );
 		lastPointer = { x: event.clientX, y: event.clientY };
+		updateCameraPosition();
 		render();
 		logObjectTransform();
 	};
@@ -252,7 +266,7 @@ const initViewerWithLibs = ( root, libs, options = {} ) => {
 		const direction = event.deltaY > 0 ? 1 : -1;
 		cameraDistance *= direction > 0 ? 1.08 : 0.92;
 		cameraDistance = clamp( cameraDistance, minCameraDistance, maxCameraDistance );
-		camera.position.set( 0, 0, cameraDistance );
+		updateCameraPosition();
 		render();
 		logObjectTransform();
 	};
